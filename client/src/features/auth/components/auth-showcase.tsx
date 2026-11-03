@@ -36,7 +36,7 @@ export function AuthShowcase() {
   }, [visible, typing, reduceMotion]);
 
   return (
-    <div className="flex w-full flex-col justify-center px-12 py-16 xl:px-20" aria-hidden="true">
+    <div className="relative flex w-full flex-col justify-center px-12 py-16 xl:px-20" aria-hidden="true">
       <div className="max-w-md">
         <p className="text-[13px] font-medium text-accent-ink">Customer support, answered</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-ink">

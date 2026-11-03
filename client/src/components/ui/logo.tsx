@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils/cn";
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
-      className={cn("inline-flex size-7 items-center justify-center rounded-md bg-accent text-white", className)}
+      className={cn("inline-flex size-7 items-center justify-center rounded-md bg-accent text-accent-fg", className)}
       aria-hidden="true"
     >
       <svg viewBox="0 0 24 24" className="size-[62%]" fill="none">

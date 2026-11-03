@@ -2,6 +2,7 @@
 
 import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { CommandPalette } from "./command-palette";
 import { Sidebar } from "./sidebar/sidebar";
 
 interface SidebarState {
@@ -9,6 +10,7 @@ interface SidebarState {
   toggleDesktop: () => void;
   openMobile: () => void;
   closeMobile: () => void;
+  openPalette: () => void;
 }
 
 const SidebarContext = createContext<SidebarState | null>(null);
@@ -25,17 +27,37 @@ const ease = [0.2, 0, 0, 1] as const;
 export function ChatShell({ children }: { children: React.ReactNode }) {
   const [desktopOpen, setDesktopOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
+  const toggleDesktop = useCallback(() => setDesktopOpen((open) => !open), []);
   const state = useMemo<SidebarState>(
     () => ({
       desktopOpen,
-      toggleDesktop: () => setDesktopOpen((open) => !open),
+      toggleDesktop,
       openMobile: () => setMobileOpen(true),
       closeMobile,
+      openPalette: () => {
+        setMobileOpen(false);
+        setPaletteOpen(true);
+      },
     }),
-    [desktopOpen, closeMobile],
+    [desktopOpen, toggleDesktop, closeMobile],
   );
+
+  // Ctrl/⌘ + K toggles the command palette from anywhere in the app.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setMobileOpen(false);
+        setPaletteOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -98,6 +120,7 @@ export function ChatShell({ children }: { children: React.ReactNode }) {
 
         <main className="flex min-w-0 flex-1 flex-col bg-surface">{children}</main>
       </div>
+      <CommandPalette open={paletteOpen} onClose={closePalette} onToggleSidebar={toggleDesktop} />
     </SidebarContext>
   );
 }

@@ -32,9 +32,9 @@ export function Sidebar({ onClose, onNavigate }: SidebarProps) {
         <Link
           href="/chat"
           onClick={onNavigate}
-          className="flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm font-medium text-ink transition-[background-color,border-color,transform] duration-150 hover:border-line-strong hover:bg-subtle active:scale-[0.98]"
+          className="group flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-medium text-accent-fg shadow-[0_4px_14px_-6px_var(--accent)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-accent-hover hover:shadow-[0_6px_18px_-6px_var(--accent)] active:scale-[0.98]"
         >
-          <Plus className="size-4 text-muted" />
+          <Plus className="size-4 transition-transform duration-300 group-hover:rotate-90" />
           New conversation
         </Link>
 

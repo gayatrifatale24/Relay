@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "framer-motion";
+import { ToastProvider } from "@/components/ui/toast";
 import { ApiError, apiClient, isUnauthorized } from "@/lib/api/client";
 
 // Installed by AppProviders once the router is available.
@@ -54,7 +55,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+      <MotionConfig reducedMotion="user">
+        <ToastProvider>{children}</ToastProvider>
+      </MotionConfig>
     </QueryClientProvider>
   );
 }

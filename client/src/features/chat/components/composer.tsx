@@ -3,6 +3,7 @@
 import { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, Square } from "lucide-react";
+import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils/cn";
 import { MAX_MESSAGE_LENGTH } from "../services/chat.service";
 
@@ -74,8 +75,8 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(function Compo
           submit();
         }}
         className={cn(
-          "mx-auto w-full max-w-3xl rounded-xl border bg-surface transition-[border-color,box-shadow] duration-150",
-          "focus-within:border-line-strong focus-within:shadow-[0_0_0_4px_var(--subtle)]",
+          "mx-auto w-full max-w-3xl rounded-2xl border bg-surface shadow-float transition-[border-color,box-shadow] duration-200",
+          "focus-within:border-accent/50 focus-within:shadow-[0_0_0_4px_var(--glow),var(--shadow-float)]",
           tooLong ? "border-danger" : "border-line",
         )}
       >
@@ -94,8 +95,11 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(function Compo
           className="scroll-thin block max-h-[200px] w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink outline-none placeholder:text-faint"
         />
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5 pl-4">
-          <p className="hidden text-xs text-faint sm:block">
-            <kbd className="font-sans">Enter</kbd> to send · <kbd className="font-sans">Shift + Enter</kbd> for a new line
+          <p className="hidden items-center gap-1.5 text-xs text-faint sm:flex">
+            <Kbd>Enter</Kbd> send
+            <span className="mx-1 text-line-strong">·</span>
+            <Kbd>Shift</Kbd>
+            <Kbd>Enter</Kbd> new line
           </p>
           <div className="ml-auto flex items-center gap-3">
             {value.length > MAX_MESSAGE_LENGTH * 0.8 && (
@@ -113,9 +117,10 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(function Compo
                   title="Stop generating"
                   whileTap={{ scale: 0.92 }}
                   {...swap}
-                  className="inline-flex size-8 items-center justify-center rounded-lg bg-ink text-surface transition-opacity hover:opacity-85"
+                  className="relative inline-flex size-9 items-center justify-center rounded-xl bg-ink text-surface transition-opacity hover:opacity-85"
                 >
-                  <Square className="size-3" fill="currentColor" strokeWidth={0} />
+                  <span className="absolute inset-0 animate-ping rounded-xl bg-ink/20 [animation-duration:1.6s] motion-reduce:hidden" />
+                  <Square className="relative size-3" fill="currentColor" strokeWidth={0} />
                 </motion.button>
               ) : (
                 <motion.button
@@ -127,11 +132,16 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(function Compo
                   {...swap}
                   animate={{ opacity: canSend ? 1 : 0.4, scale: 1 }}
                   className={cn(
-                    "inline-flex size-8 items-center justify-center rounded-lg transition-colors duration-150",
-                    canSend ? "bg-accent text-white hover:bg-accent-hover" : "cursor-not-allowed bg-subtle text-faint",
+                    "group/send inline-flex size-9 items-center justify-center rounded-xl transition-[background-color,box-shadow] duration-200",
+                    canSend
+                      ? "bg-accent text-accent-fg shadow-[0_4px_14px_-4px_var(--accent)] hover:bg-accent-hover"
+                      : "cursor-not-allowed bg-subtle text-faint",
                   )}
                 >
-                  <ArrowUp className="size-4" strokeWidth={2.25} />
+                  <ArrowUp
+                    className="size-4 transition-transform duration-200 group-hover/send:-translate-y-0.5"
+                    strokeWidth={2.25}
+                  />
                 </motion.button>
               )}
             </AnimatePresence>

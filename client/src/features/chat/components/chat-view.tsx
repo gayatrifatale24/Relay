@@ -34,7 +34,7 @@ function LoadError({ error, onRetry }: { error: unknown; onRetry: () => void }) 
           {!notFound && <Button onClick={onRetry}>Try again</Button>}
           <Link
             href="/chat"
-            className="inline-flex h-9 items-center rounded-md bg-accent px-3.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+            className="inline-flex h-9 items-center rounded-md bg-accent px-3.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover"
           >
             New conversation
           </Link>

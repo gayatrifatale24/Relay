@@ -8,11 +8,12 @@ import { MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
 import { getErrorMessage } from "@/lib/api/client";
 import { cn } from "@/lib/utils/cn";
 import { useConversations, useDeleteConversation } from "../../hooks/use-conversations";
 import type { ConversationSummary } from "../../types/chat.types";
-import { groupByRecency } from "../../utils/date";
+import { formatRelative, groupByRecency } from "../../utils/date";
 
 interface ConversationListProps {
   query: string;
@@ -24,7 +25,7 @@ function ListSkeleton() {
     <div className="space-y-1 px-1 pt-2" aria-busy="true" aria-label="Loading conversations">
       <Skeleton className="mb-3 h-3 w-14" />
       {["w-4/5", "w-3/5", "w-11/12", "w-2/3", "w-3/4"].map((width) => (
-        <div key={width} className="flex h-8 items-center px-2">
+        <div key={width} className="flex h-9 items-center px-3">
           <Skeleton className={cn("h-3", width)} />
         </div>
       ))}
@@ -47,6 +48,7 @@ export function ConversationList({ query, onNavigate }: ConversationListProps) {
   const activeId = useParams<{ conversationId?: string }>().conversationId;
   const router = useRouter();
   const remove = useDeleteConversation();
+  const toast = useToast();
   const [toDelete, setToDelete] = useState<ConversationSummary | null>(null);
 
   const groups = useMemo(() => {
@@ -86,6 +88,7 @@ export function ConversationList({ query, onNavigate }: ConversationListProps) {
     remove.mutate(toDelete.id, {
       onSuccess: () => {
         setToDelete(null);
+        toast("Conversation deleted");
         if (deletingActive) router.replace("/chat");
       },
     });
@@ -116,9 +119,11 @@ export function ConversationList({ query, onNavigate }: ConversationListProps) {
                       {active && (
                         <motion.span
                           layoutId="active-conversation"
-                          className="absolute inset-0 rounded-md bg-hover"
+                          className="absolute inset-0 rounded-lg border border-line bg-surface shadow-[0_1px_2px_rgb(16_16_20/0.05)]"
                           transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                        />
+                        >
+                          <span className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-accent" />
+                        </motion.span>
                       )}
                       <Link
                         href={`/chat/${conversation.id}`}
@@ -126,17 +131,20 @@ export function ConversationList({ query, onNavigate }: ConversationListProps) {
                         aria-current={active ? "page" : undefined}
                         title={conversation.title}
                         className={cn(
-                          "relative flex h-8 items-center rounded-md pl-2.5 pr-8 text-[13px] transition-colors duration-150",
-                          active ? "font-medium text-ink" : "text-muted hover:bg-hover/70 hover:text-ink",
+                          "relative flex h-9 items-center gap-2 rounded-lg pl-3 pr-2 text-[13px] transition-[color,background-color,padding] duration-150",
+                          active ? "font-medium text-ink" : "text-muted hover:bg-hover/70 hover:pl-3.5 hover:text-ink",
                         )}
                       >
-                        <span className="truncate">{conversation.title}</span>
+                        <span className="min-w-0 flex-1 truncate">{conversation.title}</span>
+                        <span className="shrink-0 text-[11px] tabular-nums text-faint transition-opacity duration-150 group-hover:opacity-0 max-lg:hidden">
+                          {formatRelative(conversation.updatedAt)}
+                        </span>
                       </Link>
                       <button
                         type="button"
                         onClick={() => setToDelete(conversation)}
                         aria-label={`Delete “${conversation.title}”`}
-                        className="absolute right-1 top-1/2 inline-flex size-6 -translate-y-1/2 items-center justify-center rounded text-faint opacity-0 transition-opacity duration-150 hover:bg-line hover:text-danger focus-visible:opacity-100 group-hover:opacity-100 max-lg:opacity-100"
+                        className="absolute right-1.5 top-1/2 inline-flex size-6 -translate-y-1/2 scale-90 items-center justify-center rounded-md text-faint opacity-0 transition-all duration-150 hover:bg-danger-soft hover:text-danger focus-visible:scale-100 focus-visible:opacity-100 group-hover:scale-100 group-hover:opacity-100 max-lg:scale-100 max-lg:opacity-100"
                       >
                         <Trash2 className="size-3.5" />
                       </button>

@@ -20,6 +20,18 @@ export function formatMessageTime(iso: string, now = new Date()): string {
   return startOfDay(date) === startOfDay(now) ? timeFormat.format(date) : dateTimeFormat.format(date);
 }
 
+const shortDate = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
+
+/** Compact age for lists: "now", "5m", "3h", "2d", then "Mar 4". */
+export function formatRelative(iso: string, now = new Date()): string {
+  const seconds = Math.max(0, (now.getTime() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return "now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86_400) return `${Math.floor(seconds / 3600)}h`;
+  if (seconds < 7 * 86_400) return `${Math.floor(seconds / 86_400)}d`;
+  return shortDate.format(new Date(iso));
+}
+
 export interface ConversationGroup {
   label: string;
   items: ConversationSummary[];

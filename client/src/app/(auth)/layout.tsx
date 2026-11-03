@@ -16,7 +16,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </main>
         <p className="text-xs text-faint">Protected with encrypted, HttpOnly session cookies.</p>
       </div>
-      <aside className="hidden border-l border-line bg-canvas lg:flex">
+      <aside className="relative hidden overflow-hidden border-l border-line bg-canvas lg:flex">
+        <div aria-hidden="true" className="dot-grid pointer-events-none absolute inset-0" />
         <AuthShowcase />
       </aside>
     </div>
