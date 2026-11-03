@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Neutral, slightly warm canvas with a single restrained teal accent.
+ * Components consume these through the Tailwind theme below (bg-canvas, text-muted, …).
+ */
+:root {
+  --canvas: #f7f7f5;
+  --surface: #ffffff;
+  --subtle: #f1f1ee;
+  --hover: #ebebe7;
+  --line: #e5e5e1;
+  --line-strong: #d4d4cf;
+  --ink: #1a1a1c;
+  --muted: #5b5b63;
+  --faint: #8c8c94;
+  --accent: #0d7a63;
+  --accent-hover: #0a6653;
+  --accent-soft: #e6f2ee;
+  --accent-ink: #0a5c4b;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --ring: rgb(13 122 99 / 0.28);
+  --shadow-pop: 0 1px 2px rgb(16 16 20 / 0.04), 0 8px 24px -6px rgb(16 16 20 / 0.12);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #0f0f11;
+    --surface: #151518;
+    --subtle: #1c1c20;
+    --hover: #232328;
+    --line: #26262b;
+    --line-strong: #34343a;
+    --ink: #ececee;
+    --muted: #a4a4ad;
+    --faint: #72727b;
+    --accent: #2fae8c;
+    --accent-hover: #3cc19d;
+    --accent-soft: #10251f;
+    --accent-ink: #6fd6b8;
+    --danger: #f97066;
+    --danger-soft: #2a1513;
+    --ring: rgb(47 174 140 / 0.35);
+    --shadow-pop: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-hover: var(--hover);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --shadow-pop: var(--shadow-pop);
+}
+
+/* Base styles live in a layer so Tailwind utilities (e.g. outline-none) can override them. */
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Tailwind v4 no longer gives buttons a pointer cursor. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="menuitem"],
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Thin, unobtrusive scrollbars for the sidebar and transcript. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Blinking cursor at the end of a reply that is still streaming. */
+.is-streaming > :last-child:not(ul, ol, pre, table)::after,
+.is-streaming > :is(ul, ol):last-child > li:last-child::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  border-radius: 1px;
+  background: var(--accent);
+  animation: caret-blink 1s steps(2, start) infinite;
+}
+
+@keyframes caret-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Markdown rendered inside assistant messages. */
+.prose-chat {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.prose-chat > * + * {
+  margin-top: 0.75em;
+}
+.prose-chat h1,
+.prose-chat h2,
+.prose-chat h3 {
+  font-weight: 600;
+  font-size: 1em;
+  margin-top: 1.1em;
+}
+.prose-chat ul,
+.prose-chat ol {
+  padding-left: 1.25em;
+}
+.prose-chat ul {
+  list-style: disc;
+}
+.prose-chat ol {
+  list-style: decimal;
+}
+.prose-chat li + li {
+  margin-top: 0.3em;
+}
+.prose-chat li::marker {
+  color: var(--faint);
+}
+.prose-chat strong {
+  font-weight: 600;
+}
+.prose-chat a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-chat code {
+  font-family: var(--font-geist-mono);
+  font-size: 0.85em;
+  background: var(--subtle);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.prose-chat pre {
+  background: var(--subtle);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.85em 1em;
+  overflow-x: auto;
+}
+.prose-chat pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.prose-chat blockquote {
+  border-left: 2px solid var(--line-strong);
+  padding-left: 0.85em;
+  color: var(--muted);
+}
+.prose-chat table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875em;
+}
+.prose-chat th,
+.prose-chat td {
+  border: 1px solid var(--line);
+  padding: 0.4em 0.6em;
+  text-align: left;
+}
